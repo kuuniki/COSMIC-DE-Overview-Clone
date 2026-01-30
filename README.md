@@ -1,4 +1,4 @@
-# COSMIC-DE-Overview-Clone
+# COSMIC DE 'Overview' Clone
 Similar to GNOME Overview; a combined 'workspaces' and 'launcher' view
 
 **How to install and use**
