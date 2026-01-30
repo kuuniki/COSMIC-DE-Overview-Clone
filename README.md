@@ -3,10 +3,10 @@ Similar to GNOME Overview; a combined 'workspaces' and 'launcher' view
 
 **How to install and use**
 
-Step 1 - Open terminal
+Step 1 - Open terminal/console
 
 
-Step 2 - Copy & Paste the following into Terminal/console:
+Step 2 - Copy & Paste the following into terminal/console:
 
 ```
 bash
