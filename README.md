@@ -1,5 +1,7 @@
-# COSMIC DE 'Overview' Clone
-Similar to GNOME Overview; a combined 'workspaces' and 'launcher' view
+# COSMIC DE 'Overview' Clone - Overview and Preview
+Similar to GNOME Overview; a combined 'workspaces' and 'launcher' view. Preview:
+<img width="2560" height="1440" alt="image" src="https://github.com/user-attachments/assets/aeb4fe54-3cd5-4839-987f-321698b58ad2" />
+
 
 **How to install and use**
 
