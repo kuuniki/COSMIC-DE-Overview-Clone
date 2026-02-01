@@ -190,13 +190,14 @@ struct Conf {
     bg: cosmic_bg_config::state::State,
 }
 
-#[derive(Default)]
+
 struct App {
     capture_filter: backend::CaptureFilter,
     layer_surfaces: HashMap<SurfaceId, LayerSurface>,
     outputs: Vec<Output>,
     workspaces: Workspaces,
     toplevels: Toplevels,
+    opened_at: std::time::Instant,
     toplevel_capabilities:
         Vec<zcosmic_toplevel_manager_v1::ZcosmicToplelevelManagementCapabilitiesV1>,
     conn: Option<Connection>,
@@ -213,6 +214,33 @@ struct App {
     scroll: DiscreteScrollState,
     dbus_interface: Option<dbus::Interface>,
     panel_configs: HashMap<String, Option<CosmicPanelConfig>>,
+}
+impl Default for App {
+    fn default() -> Self {
+        Self {
+            capture_filter: Default::default(),
+            layer_surfaces: Default::default(),
+            outputs: Default::default(),
+            workspaces: Default::default(),
+            toplevels: Default::default(),
+            toplevel_capabilities: Default::default(),
+            conn: Default::default(),
+            visible: false,
+            opened_at: std::time::Instant::now(),
+            wayland_cmd_sender: Default::default(),
+            drag_surface: Default::default(),
+            conf: Default::default(),
+            core: Default::default(),
+            search_value: Default::default(),
+            launcher_items: Default::default(),
+            tx: Default::default(),
+            focused: 0,
+            drop_target: Default::default(),
+            scroll: Default::default(),
+            dbus_interface: Default::default(),
+            panel_configs: Default::default(),
+        }
+    }
 }
 
 #[derive(Debug, Default)]
@@ -294,6 +322,7 @@ impl App {
     }
 
     fn show(&mut self) -> Task<cosmic::Action<Msg>> {
+            self.opened_at = std::time::Instant::now();
         if !self.visible {
             self.visible = true;
             let outputs = self.outputs.clone();
@@ -429,6 +458,7 @@ impl Application for App {
         (
             Self {
                 core,
+                opened_at: std::time::Instant::now(),
                 scroll: DiscreteScrollState::default().rate_limit(Some(SCROLL_RATE_LIMIT)),
                 ..Default::default()
             },
@@ -611,7 +641,7 @@ impl Application for App {
                         }
                         return icon_task;
                     }
-                    backend::Event::UpdateToplevel(handle, info) => {
+backend::Event::UpdateToplevel(handle, info) => {
                         if let Some(toplevel) = self.toplevels.for_handle_mut(&handle) {
                             let mut task = Task::none();
                             
@@ -627,10 +657,15 @@ impl Application for App {
                                 )
                                 .map(cosmic::Action::App);
                             }
+                            
                             toplevel.info = info;
+                            
                             // If window just became activated and workspace view is open, close it
                             if was_activated && is_activated && self.visible {
-                                return Task::batch([task, self.hide()]);
+                                // Only close if view has been open for at least 300ms to avoid race conditions
+                                if self.opened_at.elapsed().as_millis() > 300 {
+                                    return Task::batch([task, self.hide()]);
+                                }
                             }
                             return task;
                         }
