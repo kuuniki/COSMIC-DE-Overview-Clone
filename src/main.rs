@@ -887,6 +887,10 @@ backend::Event::UpdateToplevel(handle, info) => {
                 ..
             }) => Some(Msg::Backspace),
             iced::Event::Keyboard(iced::keyboard::Event::KeyPressed {
+                key: Key::Named(Named::Space),
+                ..
+            }) => Some(Msg::SearchChanged(" ".to_string())),
+            iced::Event::Keyboard(iced::keyboard::Event::KeyPressed {
                 key: Key::Named(Named::ArrowUp),
                 ..
             }) => Some(Msg::ArrowUp),
