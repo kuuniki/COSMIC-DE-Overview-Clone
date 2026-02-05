@@ -23,13 +23,18 @@ fi
 echo "Build successful!"
 echo ""
 
-# Backup original if it exists and hasn't been backed up yet
-if [ -f "/usr/bin/cosmic-workspaces" ] && [ ! -f "/usr/bin/cosmic-workspaces.original" ]; then
+# Backup original with incremental numbering
+if [ -f "/usr/bin/cosmic-workspaces" ]; then
     echo "Backing up original cosmic-workspaces..."
-    sudo mv /usr/bin/cosmic-workspaces /usr/bin/cosmic-workspaces.original
-    echo "Original backed up to /usr/bin/cosmic-workspaces.original"
-elif [ -f "/usr/bin/cosmic-workspaces.original" ]; then
-    echo "Original already backed up, skipping..."
+    
+    # Find next available backup number
+    BACKUP_NUM=1
+    while [ -f "/usr/bin/cosmic-workspaces.backup${BACKUP_NUM}" ]; do
+        BACKUP_NUM=$((BACKUP_NUM + 1))
+    done
+    
+    sudo cp /usr/bin/cosmic-workspaces "/usr/bin/cosmic-workspaces.backup${BACKUP_NUM}"
+    echo "Original backed up to /usr/bin/cosmic-workspaces.backup${BACKUP_NUM}"
 fi
 
 # Configure Super key to open Workspaces
@@ -37,7 +42,7 @@ SHORTCUTS_CONFIG="$HOME/.config/cosmic/com.system76.CosmicSettings.Shortcuts/v1/
 echo "Configuring Super key to open Workspaces..."
 
 if [ -f "$SHORTCUTS_CONFIG" ]; then
-    # Backup existing config
+    # Backup existing config with timestamp
     cp "$SHORTCUTS_CONFIG" "${SHORTCUTS_CONFIG}.backup.$(date +%s)"
 fi
 
@@ -78,9 +83,9 @@ echo "  ✓ Enter to launch selected app"
 echo "  ✓ Click dock items to close workspace view"
 echo "  ✓ Max 10 results with dark themed background (#0c0d1f)"
 echo ""
-echo "To restore the original cosmic-workspaces:"
-echo "  sudo mv /usr/bin/cosmic-workspaces.original /usr/bin/cosmic-workspaces"
-echo "  (Your shortcuts config backup is at ${SHORTCUTS_CONFIG}.backup.*)"
+echo "To restore a backup:"
+echo "  sudo cp /usr/bin/cosmic-workspaces.backupN /usr/bin/cosmic-workspaces"
+echo "  (where N is the backup number you want to restore)"
 echo ""
 EOF
 
