@@ -12,9 +12,6 @@ Step 2 - Copy & Paste the following into terminal/console:
 
 
 ```
-bash
-```
-```
 git clone https://github.com/kuuniki/COSMIC-DE-Overview-Clone.git
 cd COSMIC-DE-Overview-Clone
 bash install.sh
