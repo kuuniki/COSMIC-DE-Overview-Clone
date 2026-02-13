@@ -509,12 +509,17 @@ impl Application for App {
                         pop_launcher::Response::Update(results) => {
                             self.launcher_items = results;
                         }
-                        pop_launcher::Response::DesktopEntry { path, gpu_preference, action_name } => {
+                        pop_launcher::Response::DesktopEntry {
+                            path,
+                            gpu_preference: _,
+                            action_name: _,
+                        } => {
                             // Launch the desktop file
-                            if let Err(e) = std::process::Command::new("gtk-launch")
+                            if let Err(err) = std::process::Command::new("gtk-launch")
                                 .arg(path.file_stem().and_then(|s| s.to_str()).unwrap_or(""))
                                 .spawn()
                             {
+                                log::error!("Failed to launch desktop entry '{}': {err}", path.display());
                             }
                             return self.hide();
                         }
