@@ -12,8 +12,8 @@ Step 2 - Copy & Paste the following into terminal/console:
 
 
 ```
-git clone https://github.com/kuuniki/COSMIC-DE-Overview-Clone.git
-cd COSMIC-DE-Overview-Clone
+git clone https://github.com/kuuniki/COSMIC-DE-Overview-Launcher.git
+cd COSMIC-DE-Overview-Launcher
 bash install.sh
 ```
 
@@ -31,7 +31,7 @@ Step 1 - Open terminal/console
 Step 2 - Copy & Paste the following into terminal/console:
 
 ```
-cd COSMIC-DE-Overview-Clone
+cd COSMIC-DE-Overview-Launcher
 bash uninstall.sh
 ```
 
