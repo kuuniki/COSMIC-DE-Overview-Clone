@@ -20,7 +20,7 @@ sudo cp "/usr/bin/cosmic-workspaces.backup${BACKUP_NUM}" /usr/bin/cosmic-workspa
 sudo mv /usr/bin/cosmic-workspaces.new /usr/bin/cosmic-workspaces
 sudo killall cosmic-workspaces 2>/dev/null || true
 
-# Remove pacman hook
+# Remove pacman hook if present
 if [ -f "/etc/pacman.d/hooks/cosmic-workspaces-custom.hook" ]; then
     sudo rm /etc/pacman.d/hooks/cosmic-workspaces-custom.hook
     echo "Pacman hook removed."
