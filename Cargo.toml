@@ -57,6 +57,8 @@ wgpu = ["libcosmic/wgpu"]
 force-shm-screencopy = []
 no-subsurfaces = ["force-shm-screencopy"]
 mock-backend = []
+console = []
+a11y = []
 
 [profile.dev]
 # Not usable at opt-level 0, at least with software renderer

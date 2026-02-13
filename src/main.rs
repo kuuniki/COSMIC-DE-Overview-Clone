@@ -266,8 +266,7 @@ impl Toplevels {
 impl App {
     fn request(&self, r: subscriptions::launcher::Request) {
         if let Some(tx) = &self.tx {
-            let result = tx.try_send(r);
-        } else {
+            let _ = tx.try_send(r);
         }
     }
 
@@ -508,7 +507,7 @@ impl Application for App {
                             action_name,
                         } => {
                             // Launch the desktop file
-                            if let Err(e) = std::process::Command::new("gtk-launch")
+                            if let Err(_e) = std::process::Command::new("gtk-launch")
                                 .arg(path.file_stem().and_then(|s| s.to_str()).unwrap_or(""))
                                 .spawn()
                             {}
