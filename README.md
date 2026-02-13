@@ -1,5 +1,5 @@
-# COSMIC DE 'Overview' Launcher - Workspaces + Launcher combined view
-Bringing the magic of GNOME to COSMIC
+# COSMIC DE 'Overview' Launcher
+Bringing the magic of GNOME to COSMIC with a combined Workspaces + Launcher UI. Preview:
 <img width="2560" height="1440" alt="image" src="https://github.com/user-attachments/assets/aeb4fe54-3cd5-4839-987f-321698b58ad2" />
 
 
