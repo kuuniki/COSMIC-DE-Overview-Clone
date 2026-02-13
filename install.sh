@@ -12,7 +12,7 @@ fi
 INSTALL_DIR="$(pwd)"
 
 echo "Building release binary..."
-cargo build --release
+cargo build --release --locked
 
 if [ ! -f "target/release/cosmic-workspaces" ]; then
     echo "Error: Build failed"

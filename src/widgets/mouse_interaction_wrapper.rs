@@ -9,6 +9,7 @@ use cosmic::iced::{
 
 use std::marker::PhantomData;
 
+#[allow(dead_code)]
 pub fn mouse_interaction_wrapper<'a, Msg, T: Into<cosmic::Element<'a, Msg>>>(
     mouse_interaction: mouse::Interaction,
     content: T,

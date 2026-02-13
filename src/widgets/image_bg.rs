@@ -16,6 +16,7 @@ use cosmic::{
 
 use std::marker::PhantomData;
 
+#[allow(dead_code)]
 pub fn image_bg<'a, Msg, T1: Into<cosmic::Element<'a, Msg>>, T2: Into<cosmic::Element<'a, Msg>>>(
     content: T1,
     bg: T2,
