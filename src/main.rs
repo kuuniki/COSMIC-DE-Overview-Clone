@@ -23,7 +23,6 @@ use cosmic::{
         clipboard::dnd::{DndEvent, SourceEvent},
         event::wayland::{Event as WaylandEvent, LayerEvent, OutputEvent},
         keyboard::key::{Key, Named},
-        mouse::ScrollDelta,
     },
     iced_core::window::Id as SurfaceId,
     iced_runtime::platform_specific::wayland::layer_surface::{
@@ -32,7 +31,6 @@ use cosmic::{
     iced_winit::platform_specific::wayland::commands::layer_surface::{
         destroy_layer_surface, get_layer_surface,
     },
-    scroll::DiscreteScrollState,
 };
 use cosmic_comp_config::CosmicCompConfig;
 use cosmic_config::{CosmicConfigEntry, cosmic_config_derive::CosmicConfigEntry};
@@ -44,7 +42,6 @@ use std::{
     mem,
     path::PathBuf,
     str,
-    time::Duration,
 };
 use tokio::sync::mpsc;
 
@@ -55,14 +52,12 @@ mod localize;
 mod backend;
 mod view;
 use backend::{ExtForeignToplevelHandleV1, ExtWorkspaceHandleV1, ToplevelInfo};
+mod components;
 mod dnd;
+mod subscriptions;
 mod utils;
 mod widgets;
-mod subscriptions;
-mod components;
 use dnd::{DragSurface, DragToplevel, DragWorkspace, DropTarget};
-
-const SCROLL_RATE_LIMIT: Duration = Duration::from_millis(200);
 
 #[derive(Clone, Debug, Default, PartialEq, CosmicConfigEntry)]
 struct CosmicWorkspacesConfig {
@@ -125,7 +120,6 @@ enum Msg {
     Config(CosmicWorkspacesConfig),
     BgConfig(cosmic_bg_config::state::State),
     UpdateToplevelIcon(String, Option<PathBuf>),
-    OnScroll(wl_output::WlOutput, ScrollDelta),
     TogglePinned(ExtWorkspaceHandleV1),
     EnteredWorkspaceSidebarEntry(ExtWorkspaceHandleV1, bool),
     DbusInterface(zbus::Result<dbus::Interface>),
@@ -190,14 +184,12 @@ struct Conf {
     bg: cosmic_bg_config::state::State,
 }
 
-
 struct App {
     capture_filter: backend::CaptureFilter,
     layer_surfaces: HashMap<SurfaceId, LayerSurface>,
     outputs: Vec<Output>,
     workspaces: Workspaces,
     toplevels: Toplevels,
-    opened_at: std::time::Instant,
     toplevel_capabilities:
         Vec<zcosmic_toplevel_manager_v1::ZcosmicToplelevelManagementCapabilitiesV1>,
     conn: Option<Connection>,
@@ -210,8 +202,8 @@ struct App {
     launcher_items: Vec<SearchResult>,
     tx: Option<mpsc::Sender<subscriptions::launcher::Request>>,
     focused: usize,
+    ignore_next_activation_update: bool,
     drop_target: Option<DropTarget>,
-    scroll: DiscreteScrollState,
     dbus_interface: Option<dbus::Interface>,
     panel_configs: HashMap<String, Option<CosmicPanelConfig>>,
 }
@@ -226,7 +218,6 @@ impl Default for App {
             toplevel_capabilities: Default::default(),
             conn: Default::default(),
             visible: false,
-            opened_at: std::time::Instant::now(),
             wayland_cmd_sender: Default::default(),
             drag_surface: Default::default(),
             conf: Default::default(),
@@ -235,8 +226,8 @@ impl Default for App {
             launcher_items: Default::default(),
             tx: Default::default(),
             focused: 0,
+            ignore_next_activation_update: false,
             drop_target: Default::default(),
-            scroll: Default::default(),
             dbus_interface: Default::default(),
             panel_configs: Default::default(),
         }
@@ -275,8 +266,7 @@ impl Toplevels {
 impl App {
     fn request(&self, r: subscriptions::launcher::Request) {
         if let Some(tx) = &self.tx {
-            let result = tx.try_send(r);
-        } else {
+            let _ = tx.try_send(r);
         }
     }
 
@@ -322,7 +312,7 @@ impl App {
     }
 
     fn show(&mut self) -> Task<cosmic::Action<Msg>> {
-            self.opened_at = std::time::Instant::now();
+        self.ignore_next_activation_update = true;
         if !self.visible {
             self.visible = true;
             let outputs = self.outputs.clone();
@@ -458,8 +448,6 @@ impl Application for App {
         (
             Self {
                 core,
-                opened_at: std::time::Instant::now(),
-                scroll: DiscreteScrollState::default().rate_limit(Some(SCROLL_RATE_LIMIT)),
                 ..Default::default()
             },
             Task::none(),
@@ -473,7 +461,9 @@ impl Application for App {
                     return Task::none();
                 }
                 self.search_value.push_str(&value);
-                self.request(subscriptions::launcher::Request::Search(self.search_value.clone()));
+                self.request(subscriptions::launcher::Request::Search(
+                    self.search_value.clone(),
+                ));
                 self.focused = 0;
             }
             Msg::Backspace => {
@@ -481,7 +471,9 @@ impl Application for App {
                     return Task::none();
                 }
                 self.search_value.pop();
-                self.request(subscriptions::launcher::Request::Search(self.search_value.clone()));
+                self.request(subscriptions::launcher::Request::Search(
+                    self.search_value.clone(),
+                ));
                 self.focused = 0;
             }
             Msg::ArrowUp => {
@@ -509,13 +501,16 @@ impl Application for App {
                         pop_launcher::Response::Update(results) => {
                             self.launcher_items = results;
                         }
-                        pop_launcher::Response::DesktopEntry { path, gpu_preference, action_name } => {
+                        pop_launcher::Response::DesktopEntry {
+                            path,
+                            gpu_preference: _,
+                            action_name: _,
+                        } => {
                             // Launch the desktop file
-                            if let Err(e) = std::process::Command::new("gtk-launch")
+                            if let Err(_e) = std::process::Command::new("gtk-launch")
                                 .arg(path.file_stem().and_then(|s| s.to_str()).unwrap_or(""))
                                 .spawn()
-                            {
-                            }
+                            {}
                             return self.hide();
                         }
                         pop_launcher::Response::Close => {
@@ -532,7 +527,7 @@ impl Application for App {
                     self.request(subscriptions::launcher::Request::Activate(item.id));
                     return Task::perform(
                         async { tokio::time::sleep(tokio::time::Duration::from_millis(300)).await },
-                        |_| cosmic::Action::App(Msg::Close)
+                        |_| cosmic::Action::App(Msg::Close),
                     );
                 } else {
                 }
@@ -641,14 +636,14 @@ impl Application for App {
                         }
                         return icon_task;
                     }
-backend::Event::UpdateToplevel(handle, info) => {
+                    backend::Event::UpdateToplevel(handle, info) => {
                         if let Some(toplevel) = self.toplevels.for_handle_mut(&handle) {
                             let mut task = Task::none();
-                            
+
                             // Close workspace view when a toplevel becomes activated
                             let was_activated = !toplevel.info.state.contains(&cosmic::cctk::cosmic_protocols::toplevel_info::v1::client::zcosmic_toplevel_handle_v1::State::Activated);
                             let is_activated = info.state.contains(&cosmic::cctk::cosmic_protocols::toplevel_info::v1::client::zcosmic_toplevel_handle_v1::State::Activated);
-                            
+
                             if toplevel.info.app_id != info.app_id {
                                 let app_id = info.app_id.clone();
                                 task = iced::Task::perform(
@@ -657,13 +652,14 @@ backend::Event::UpdateToplevel(handle, info) => {
                                 )
                                 .map(cosmic::Action::App);
                             }
-                            
+
                             toplevel.info = info;
-                            
+
                             // If window just became activated and workspace view is open, close it
                             if was_activated && is_activated && self.visible {
-                                // Only close if view has been open for at least 300ms to avoid race conditions
-                                if self.opened_at.elapsed().as_millis() > 300 {
+                                if self.ignore_next_activation_update {
+                                    self.ignore_next_activation_update = false;
+                                } else {
                                     return Task::batch([task, self.hide()]);
                                 }
                             }
@@ -763,21 +759,6 @@ backend::Event::UpdateToplevel(handle, info) => {
                 for toplevel in self.toplevels.0.iter_mut() {
                     if toplevel.info.app_id == app_id {
                         toplevel.icon = path.clone();
-                    }
-                }
-            }
-            Msg::OnScroll(output, delta) => {
-                let discrete_delta = self.scroll.update(delta);
-                if discrete_delta.y != 0 {
-                    let workspaces = self.workspaces.for_output(&output).collect::<Vec<_>>();
-                    if let Some(workspace_idx) = workspaces.iter().position(|i| i.is_active()) {
-                        let new_workspace_idx = (workspace_idx as isize - discrete_delta.y)
-                            .rem_euclid(workspaces.len() as isize)
-                            as usize;
-                        let workspace = workspaces[new_workspace_idx];
-                        self.send_wayland_cmd(backend::Cmd::ActivateWorkspace(
-                            workspace.handle().clone(),
-                        ));
                     }
                 }
             }
@@ -907,7 +888,7 @@ backend::Event::UpdateToplevel(handle, info) => {
             }
             _ => None,
         });
-        
+
         let config_subscription = cosmic_config::config_subscription::<_, CosmicWorkspacesConfig>(
             "config-sub",
             "com.system76.CosmicWorkspaces".into(),
@@ -919,7 +900,7 @@ backend::Event::UpdateToplevel(handle, info) => {
             }
             Msg::Config(update.config)
         });
-        
+
         let comp_config_subscription = cosmic_config::config_subscription::<_, CosmicCompConfig>(
             "comp-config-sub",
             "com.system76.CosmicComp".into(),
@@ -931,7 +912,7 @@ backend::Event::UpdateToplevel(handle, info) => {
             }
             Msg::CompConfig(Box::new(update.config))
         });
-        
+
         let bg_subscription =
             cosmic_config::config_state_subscription::<_, cosmic_bg_config::state::State>(
                 "bg-sub",
@@ -945,8 +926,8 @@ backend::Event::UpdateToplevel(handle, info) => {
                 Msg::BgConfig(update.config)
             });
 
-        let launcher_subscription = subscriptions::launcher::subscription::<()>(())
-            .map(Msg::LauncherEvent);
+        let launcher_subscription =
+            subscriptions::launcher::subscription::<()>(()).map(Msg::LauncherEvent);
 
         let mut subscriptions = vec![
             events,
@@ -955,7 +936,7 @@ backend::Event::UpdateToplevel(handle, info) => {
             bg_subscription,
             launcher_subscription,
         ];
-        
+
         if let Some(conn) = self.conn.clone() {
             subscriptions.push(backend::subscription(conn).map(Msg::Wayland));
         }
