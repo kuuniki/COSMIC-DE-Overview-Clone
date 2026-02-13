@@ -11,8 +11,13 @@ fi
 
 INSTALL_DIR="$(pwd)"
 
+BUILD_CMD=(cargo build --release)
+if [ -f "Cargo.lock" ]; then
+    BUILD_CMD+=(--locked)
+fi
+
 echo "Building release binary..."
-cargo build --release
+"${BUILD_CMD[@]}"
 
 if [ ! -f "target/release/cosmic-workspaces" ]; then
     echo "Error: Build failed"
@@ -62,8 +67,8 @@ sudo killall cosmic-workspaces 2>/dev/null || true
 sleep 1
 echo "Installed successfully!"
 
+AUTO_REINSTALL="manual"
 if command -v pacman >/dev/null 2>&1; then
-    # Pacman hook to survive updates
     echo "Creating pacman hook..."
     sudo mkdir -p /etc/pacman.d/hooks
     sudo tee /etc/pacman.d/hooks/cosmic-workspaces-custom.hook > /dev/null << HOOK
@@ -79,6 +84,7 @@ When = PostTransaction
 Exec = /bin/sh -c 'cp ${INSTALL_DIR}/target/release/cosmic-workspaces /usr/bin/cosmic-workspaces.new && chmod +x /usr/bin/cosmic-workspaces.new && mv /usr/bin/cosmic-workspaces.new /usr/bin/cosmic-workspaces && killall cosmic-workspaces 2>/dev/null || true'
 HOOK
     echo "Pacman hook installed!"
+    AUTO_REINSTALL="pacman"
 else
     echo "Pacman not detected; skipping package hook setup."
 fi
@@ -91,5 +97,10 @@ echo "  ✓ Type to search apps immediately"
 echo "  ✓ Space, backspace, arrow keys all work"
 echo "  ✓ Enter or click to launch"
 echo "  ✓ Clicking dock closes the view"
-echo "  ✓ Auto-reinstalls after system updates"
+if [ "$AUTO_REINSTALL" = "pacman" ]; then
+    echo "  ✓ Auto-reinstalls after system updates (pacman hook)"
+else
+    echo "  ✓ Works on any distro with COSMIC DE"
+    echo "  • Re-run 'bash install.sh' after your distro updates cosmic-workspaces"
+fi
 echo ""
