@@ -5,7 +5,7 @@ echo "=== Cosmic Workspaces with Launcher Integration - Installation ==="
 echo ""
 
 if [ ! -f "Cargo.toml" ]; then
-    echo "Error: Please run this script from the cosmic-workspaces-epoch directory"
+    echo "Error: Please run this script from the COSMIC-DE-Overview-Clone directory"
     exit 1
 fi
 
@@ -33,7 +33,9 @@ fi
 
 # Configure Super key
 SHORTCUTS_CONFIG="$HOME/.config/cosmic/com.system76.CosmicSettings.Shortcuts/v1/custom"
+SHORTCUTS_DIR="$(dirname "$SHORTCUTS_CONFIG")"
 echo "Configuring Super key to open Workspaces..."
+mkdir -p "$SHORTCUTS_DIR"
 if [ -f "$SHORTCUTS_CONFIG" ]; then
     cp "$SHORTCUTS_CONFIG" "${SHORTCUTS_CONFIG}.backup.$(date +%s)"
 fi
@@ -60,10 +62,11 @@ sudo killall cosmic-workspaces 2>/dev/null || true
 sleep 1
 echo "Installed successfully!"
 
-# Pacman hook to survive updates
-echo "Creating pacman hook..."
-sudo mkdir -p /etc/pacman.d/hooks
-sudo tee /etc/pacman.d/hooks/cosmic-workspaces-custom.hook > /dev/null << HOOK
+if command -v pacman >/dev/null 2>&1; then
+    # Pacman hook to survive updates
+    echo "Creating pacman hook..."
+    sudo mkdir -p /etc/pacman.d/hooks
+    sudo tee /etc/pacman.d/hooks/cosmic-workspaces-custom.hook > /dev/null << HOOK
 [Trigger]
 Operation = Install
 Operation = Upgrade
@@ -75,7 +78,10 @@ Description = Reinstalling custom cosmic-workspaces with launcher integration...
 When = PostTransaction
 Exec = /bin/sh -c 'cp ${INSTALL_DIR}/target/release/cosmic-workspaces /usr/bin/cosmic-workspaces.new && chmod +x /usr/bin/cosmic-workspaces.new && mv /usr/bin/cosmic-workspaces.new /usr/bin/cosmic-workspaces && killall cosmic-workspaces 2>/dev/null || true'
 HOOK
-echo "Pacman hook installed!"
+    echo "Pacman hook installed!"
+else
+    echo "Pacman not detected; skipping package hook setup."
+fi
 
 echo ""
 echo "=== Installation Complete! ==="
