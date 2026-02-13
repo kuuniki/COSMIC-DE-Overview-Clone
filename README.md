@@ -12,12 +12,9 @@ Step 2 - Copy & Paste the following into terminal/console:
 
 
 ```
-bash
-```
-```
 git clone https://github.com/kuuniki/COSMIC-DE-Overview-Clone.git
 cd COSMIC-DE-Overview-Clone
-./install.sh
+bash install.sh
 ```
 
 
@@ -34,11 +31,8 @@ Step 1 - Open terminal/console
 Step 2 - Copy & Paste the following into terminal/console:
 
 ```
-bash
-```
-```
 cd COSMIC-DE-Overview-Clone
-./uninstall.sh
+bash uninstall.sh
 ```
 
 
