@@ -98,6 +98,7 @@ pub enum Cmd {
         wl_output::WlOutput,
     ),
     MoveWorkspaceBefore(ExtWorkspaceHandleV1, ExtWorkspaceHandleV1),
+    #[allow(dead_code)]
     MoveWorkspaceAfter(ExtWorkspaceHandleV1, ExtWorkspaceHandleV1),
     ActivateWorkspace(ExtWorkspaceHandleV1),
     SetWorkspacePinned(ExtWorkspaceHandleV1, bool),
