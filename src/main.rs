@@ -503,8 +503,8 @@ impl Application for App {
                         }
                         pop_launcher::Response::DesktopEntry {
                             path,
-                            gpu_preference: _,
-                            action_name: _,
+                            gpu_preference,
+                            action_name,
                         } => {
                             // Launch the desktop file
                             if let Err(_e) = std::process::Command::new("gtk-launch")
