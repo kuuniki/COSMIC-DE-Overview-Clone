@@ -1,0 +1,12 @@
+/home/bosh/Local/COSMIC-DE-Overview-Clone/target/release/deps/cosmic_freedesktop_icons-81afc6eb395d06f2.d: /home/bosh/.cargo/git/checkouts/freedesktop-icons-4dca37f6428ade88/7a61a70/src/lib.rs /home/bosh/.cargo/git/checkouts/freedesktop-icons-4dca37f6428ade88/7a61a70/src/cache.rs /home/bosh/.cargo/git/checkouts/freedesktop-icons-4dca37f6428ade88/7a61a70/src/theme/mod.rs /home/bosh/.cargo/git/checkouts/freedesktop-icons-4dca37f6428ade88/7a61a70/src/theme/directories.rs /home/bosh/.cargo/git/checkouts/freedesktop-icons-4dca37f6428ade88/7a61a70/src/theme/parse.rs /home/bosh/.cargo/git/checkouts/freedesktop-icons-4dca37f6428ade88/7a61a70/src/theme/paths.rs
+
+/home/bosh/Local/COSMIC-DE-Overview-Clone/target/release/deps/libcosmic_freedesktop_icons-81afc6eb395d06f2.rlib: /home/bosh/.cargo/git/checkouts/freedesktop-icons-4dca37f6428ade88/7a61a70/src/lib.rs /home/bosh/.cargo/git/checkouts/freedesktop-icons-4dca37f6428ade88/7a61a70/src/cache.rs /home/bosh/.cargo/git/checkouts/freedesktop-icons-4dca37f6428ade88/7a61a70/src/theme/mod.rs /home/bosh/.cargo/git/checkouts/freedesktop-icons-4dca37f6428ade88/7a61a70/src/theme/directories.rs /home/bosh/.cargo/git/checkouts/freedesktop-icons-4dca37f6428ade88/7a61a70/src/theme/parse.rs /home/bosh/.cargo/git/checkouts/freedesktop-icons-4dca37f6428ade88/7a61a70/src/theme/paths.rs
+
+/home/bosh/Local/COSMIC-DE-Overview-Clone/target/release/deps/libcosmic_freedesktop_icons-81afc6eb395d06f2.rmeta: /home/bosh/.cargo/git/checkouts/freedesktop-icons-4dca37f6428ade88/7a61a70/src/lib.rs /home/bosh/.cargo/git/checkouts/freedesktop-icons-4dca37f6428ade88/7a61a70/src/cache.rs /home/bosh/.cargo/git/checkouts/freedesktop-icons-4dca37f6428ade88/7a61a70/src/theme/mod.rs /home/bosh/.cargo/git/checkouts/freedesktop-icons-4dca37f6428ade88/7a61a70/src/theme/directories.rs /home/bosh/.cargo/git/checkouts/freedesktop-icons-4dca37f6428ade88/7a61a70/src/theme/parse.rs /home/bosh/.cargo/git/checkouts/freedesktop-icons-4dca37f6428ade88/7a61a70/src/theme/paths.rs
+
+/home/bosh/.cargo/git/checkouts/freedesktop-icons-4dca37f6428ade88/7a61a70/src/lib.rs:
+/home/bosh/.cargo/git/checkouts/freedesktop-icons-4dca37f6428ade88/7a61a70/src/cache.rs:
+/home/bosh/.cargo/git/checkouts/freedesktop-icons-4dca37f6428ade88/7a61a70/src/theme/mod.rs:
+/home/bosh/.cargo/git/checkouts/freedesktop-icons-4dca37f6428ade88/7a61a70/src/theme/directories.rs:
+/home/bosh/.cargo/git/checkouts/freedesktop-icons-4dca37f6428ade88/7a61a70/src/theme/parse.rs:
+/home/bosh/.cargo/git/checkouts/freedesktop-icons-4dca37f6428ade88/7a61a70/src/theme/paths.rs:

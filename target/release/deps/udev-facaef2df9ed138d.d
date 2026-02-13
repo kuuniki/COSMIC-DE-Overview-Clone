@@ -1,0 +1,13 @@
+/home/bosh/Local/COSMIC-DE-Overview-Clone/target/release/deps/udev-facaef2df9ed138d.d: /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/lib.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/device.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/enumerator.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/list.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/monitor.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/udev.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/util.rs
+
+/home/bosh/Local/COSMIC-DE-Overview-Clone/target/release/deps/libudev-facaef2df9ed138d.rlib: /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/lib.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/device.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/enumerator.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/list.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/monitor.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/udev.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/util.rs
+
+/home/bosh/Local/COSMIC-DE-Overview-Clone/target/release/deps/libudev-facaef2df9ed138d.rmeta: /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/lib.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/device.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/enumerator.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/list.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/monitor.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/udev.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/util.rs
+
+/home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/lib.rs:
+/home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/device.rs:
+/home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/enumerator.rs:
+/home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/list.rs:
+/home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/monitor.rs:
+/home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/udev.rs:
+/home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/udev-0.9.3/src/util.rs:

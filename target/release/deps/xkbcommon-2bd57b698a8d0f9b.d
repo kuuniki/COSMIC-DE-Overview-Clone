@@ -1,0 +1,11 @@
+/home/bosh/Local/COSMIC-DE-Overview-Clone/target/release/deps/xkbcommon-2bd57b698a8d0f9b.d: /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/xkbcommon-0.7.0/src/lib.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/xkbcommon-0.7.0/src/xkb/mod.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/xkbcommon-0.7.0/src/xkb/compose.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/xkbcommon-0.7.0/src/xkb/ffi.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/xkbcommon-0.7.0/src/xkb/keysyms.rs
+
+/home/bosh/Local/COSMIC-DE-Overview-Clone/target/release/deps/libxkbcommon-2bd57b698a8d0f9b.rlib: /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/xkbcommon-0.7.0/src/lib.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/xkbcommon-0.7.0/src/xkb/mod.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/xkbcommon-0.7.0/src/xkb/compose.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/xkbcommon-0.7.0/src/xkb/ffi.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/xkbcommon-0.7.0/src/xkb/keysyms.rs
+
+/home/bosh/Local/COSMIC-DE-Overview-Clone/target/release/deps/libxkbcommon-2bd57b698a8d0f9b.rmeta: /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/xkbcommon-0.7.0/src/lib.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/xkbcommon-0.7.0/src/xkb/mod.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/xkbcommon-0.7.0/src/xkb/compose.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/xkbcommon-0.7.0/src/xkb/ffi.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/xkbcommon-0.7.0/src/xkb/keysyms.rs
+
+/home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/xkbcommon-0.7.0/src/lib.rs:
+/home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/xkbcommon-0.7.0/src/xkb/mod.rs:
+/home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/xkbcommon-0.7.0/src/xkb/compose.rs:
+/home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/xkbcommon-0.7.0/src/xkb/ffi.rs:
+/home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/xkbcommon-0.7.0/src/xkb/keysyms.rs:

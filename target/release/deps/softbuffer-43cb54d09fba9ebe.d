@@ -1,0 +1,14 @@
+/home/bosh/Local/COSMIC-DE-Overview-Clone/target/release/deps/softbuffer-43cb54d09fba9ebe.d: /home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/lib.rs /home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/kms.rs /home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/wayland/mod.rs /home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/wayland/buffer.rs /home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/x11.rs /home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/error.rs /home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/util.rs /home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/../README.md
+
+/home/bosh/Local/COSMIC-DE-Overview-Clone/target/release/deps/libsoftbuffer-43cb54d09fba9ebe.rlib: /home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/lib.rs /home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/kms.rs /home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/wayland/mod.rs /home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/wayland/buffer.rs /home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/x11.rs /home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/error.rs /home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/util.rs /home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/../README.md
+
+/home/bosh/Local/COSMIC-DE-Overview-Clone/target/release/deps/libsoftbuffer-43cb54d09fba9ebe.rmeta: /home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/lib.rs /home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/kms.rs /home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/wayland/mod.rs /home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/wayland/buffer.rs /home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/x11.rs /home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/error.rs /home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/util.rs /home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/../README.md
+
+/home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/lib.rs:
+/home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/kms.rs:
+/home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/wayland/mod.rs:
+/home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/wayland/buffer.rs:
+/home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/x11.rs:
+/home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/error.rs:
+/home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/util.rs:
+/home/bosh/.cargo/git/checkouts/softbuffer-bc2d12ab26478565/a3f77e2/src/../README.md:

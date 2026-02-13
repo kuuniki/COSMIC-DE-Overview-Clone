@@ -1,0 +1,12 @@
+/home/bosh/Local/COSMIC-DE-Overview-Clone/target/release/deps/drm_ffi-f6294bc517760ec4.d: /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/drm-ffi-0.9.0/src/lib.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/drm-ffi-0.9.0/src/utils.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/drm-ffi-0.9.0/src/gem.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/drm-ffi-0.9.0/src/ioctl.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/drm-ffi-0.9.0/src/mode.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/drm-ffi-0.9.0/src/syncobj.rs
+
+/home/bosh/Local/COSMIC-DE-Overview-Clone/target/release/deps/libdrm_ffi-f6294bc517760ec4.rlib: /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/drm-ffi-0.9.0/src/lib.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/drm-ffi-0.9.0/src/utils.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/drm-ffi-0.9.0/src/gem.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/drm-ffi-0.9.0/src/ioctl.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/drm-ffi-0.9.0/src/mode.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/drm-ffi-0.9.0/src/syncobj.rs
+
+/home/bosh/Local/COSMIC-DE-Overview-Clone/target/release/deps/libdrm_ffi-f6294bc517760ec4.rmeta: /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/drm-ffi-0.9.0/src/lib.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/drm-ffi-0.9.0/src/utils.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/drm-ffi-0.9.0/src/gem.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/drm-ffi-0.9.0/src/ioctl.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/drm-ffi-0.9.0/src/mode.rs /home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/drm-ffi-0.9.0/src/syncobj.rs
+
+/home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/drm-ffi-0.9.0/src/lib.rs:
+/home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/drm-ffi-0.9.0/src/utils.rs:
+/home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/drm-ffi-0.9.0/src/gem.rs:
+/home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/drm-ffi-0.9.0/src/ioctl.rs:
+/home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/drm-ffi-0.9.0/src/mode.rs:
+/home/bosh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/drm-ffi-0.9.0/src/syncobj.rs:
