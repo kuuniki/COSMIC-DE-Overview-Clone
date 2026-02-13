@@ -8,6 +8,7 @@ use std::hash::Hash;
 use tokio::sync::{mpsc, oneshot};
 
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub enum Request {
     Search(String),
     Activate(u32),
