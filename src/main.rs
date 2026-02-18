@@ -200,6 +200,7 @@ struct App {
     core: cosmic::app::Core,
     search_value: String,
     launcher_items: Vec<SearchResult>,
+    launcher_item_icon_handles: Vec<Option<cosmic::widget::icon::Handle>>,
     tx: Option<mpsc::Sender<subscriptions::launcher::Request>>,
     focused: usize,
     ignore_next_activation_update: bool,
@@ -224,6 +225,7 @@ impl Default for App {
             core: Default::default(),
             search_value: Default::default(),
             launcher_items: Default::default(),
+            launcher_item_icon_handles: Default::default(),
             tx: Default::default(),
             focused: 0,
             ignore_next_activation_update: false,
@@ -499,7 +501,29 @@ impl Application for App {
                 subscriptions::launcher::Event::Response(response) => {
                     match response {
                         pop_launcher::Response::Update(results) => {
-                            self.launcher_items = results;
+                            self.launcher_items = results.into_iter().filter(|item| item.window.is_none()).collect();
+                            // Load icons for each result
+                            self.launcher_item_icon_handles = self.launcher_items
+                                .iter()
+                                .map(|item| {
+                                    item.icon.as_ref().and_then(|source| {
+                                        Some(match source {
+                                            pop_launcher::IconSource::Name(name) => {
+                                                if std::path::Path::new(name.as_ref()).exists() {
+                                                    cosmic::widget::icon::from_path(name.as_ref().into())
+                                                } else {
+                                                    cosmic::widget::icon::from_name(name.as_ref()).handle()
+                                                }
+                                            }
+                                            pop_launcher::IconSource::Mime(mime) => {
+                                                cosmic::widget::icon::from_name(
+                                                    mime.as_ref().replace("/", "-")
+                                                ).handle()
+                                            }
+                                        })
+                                    })
+                                })
+                                .collect();
                         }
                         pop_launcher::Response::DesktopEntry {
                             path,

@@ -141,609 +141,120 @@ pub(crate) fn layer_surface<'a>(
         .padding(12)
         .id(crate::SEARCH_INPUT_ID.clone());
 
-    let launcher_results = if !app.launcher_items.is_empty() {
-        let items: Vec<cosmic::Element<Msg>> = app.launcher_items
-            .iter()
-            .take(10)  // Cap at 10 results
-            .enumerate()
-            .map(|(i, item)| {
-                let button = cosmic::widget::button::text(&item.name)
-                    .on_press(Msg::Activate(Some(i)))
+let launcher_results: cosmic::Element<Msg> = if !app.launcher_items.is_empty() {
+    let items: Vec<_> = app
+        .launcher_items
+        .iter()
+        .take(5)
+        .enumerate()
+        .map(|(i, item)| {
+            let name = cosmic::widget::text::body(&item.name)
+                .align_x(cosmic::iced::alignment::Horizontal::Left);
+            let desc = cosmic::widget::text::caption(&item.description)
+                .align_x(cosmic::iced::alignment::Horizontal::Left);
+            
+            let mut button_content = Vec::new();
+            
+            // Add icon if available
+            if let Some(Some(icon_handle)) = app.launcher_item_icon_handles.get(i) {
+                button_content.push(
+                    cosmic::widget::icon(icon_handle.clone())
+                        .width(Length::Fixed(32.0))
+                        .height(Length::Fixed(32.0))
+                        .into(),
+                );
+            }
+            
+            // Add name and description column
+            button_content.push(
+                cosmic::widget::column::with_children(vec![name.into(), desc.into()])
                     .width(Length::Fill)
-                    .padding(12);
-                if i == app.focused {
-                    button.class(cosmic::theme::Button::Suggested).into()
-                } else {
-                    button.into()
-                }
-            })
-            .collect();
-        cosmic::widget::container(
-            cosmic::widget::column::with_children(items)
-                .spacing(1)  // Grid lines between items
-        )
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
+                    .into()
+            );
+            
+            let button = cosmic::widget::button::custom(
+                cosmic::widget::row::with_children(button_content)
+                    .spacing(12)
+                    .align_y(cosmic::iced::Alignment::Center)
+            )
+            .on_press(Msg::Activate(Some(i)))
+            .width(Length::Fill)
+            .padding(12);
+            
+            if i == app.focused {
+                button.class(cosmic::theme::Button::Suggested).into()
+            } else {
+                button.into()
             }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .class(cosmic::theme::Container::custom(|_theme| {
-            cosmic::iced::widget::container::Style {
-                background: Some(cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31)
-                )),
-                border: Border {
-                    radius: 8.0.into(),
-                    ..Default::default()
-                },
-                ..Default::default()
-            }
-        }))
-        .padding(4)
-        .width(Length::Fill)
-        .into()
-    } else {
-        cosmic::Element::from(cosmic::widget::Space::new(Length::Shrink, Length::Shrink))
-    };
-
-    let search_section = cosmic::widget::container(
-        column![search_bar, launcher_results]
-            .spacing(8)
-            .width(Length::Fixed(600.0))
+        })
+        .collect();
+    cosmic::widget::container(
+        cosmic::widget::column::with_children(items).spacing(1),
     )
+    .class(cosmic::theme::Container::custom(|_theme| {
+        cosmic::iced::widget::container::Style {
+            background: Some(
+                cosmic::iced::Background::Color(
+                    cosmic::iced::Color::from_rgb8(12, 13, 31),
+                )
+            ),
+            border: Border {
+                radius: 8.0.into(),
+                ..Default::default()
+            },
+            ..Default::default()
+        }
+    }))
+    .padding(4)
     .width(Length::Fill)
-    .align_x(cosmic::iced::alignment::Horizontal::Center);
+    .into()
+} else {
+    cosmic::Element::from(cosmic::widget::Space::new(
+        Length::Shrink,
+        Length::Shrink,
+    ))
+};
+let search_section = cosmic::widget::container(
+    column![search_bar, launcher_results]
+        .spacing(8)
+        .width(Length::Fixed(600.0)),
+)
+.width(Length::Fill)
+.align_x(cosmic::iced::alignment::Horizontal::Center);
 
-    let container = match layout {
-        WorkspaceLayout::Vertical => widget::layer_container(
-            column![
+let container = match layout {
+    WorkspaceLayout::Vertical => {
+        widget::layer_container(
+            row![
+                sidebar,
                 search_section,
-                row![sidebar, toplevels]
-                    .spacing(12)
-                    .height(Length::Fill)
-                    .width(Length::Fill)
+                toplevels
             ]
             .spacing(12)
-        ),
-        WorkspaceLayout::Horizontal => widget::layer_container(
+            .height(Length::Fill)
+            .width(Length::Fill)
+        )
+    }
+
+    WorkspaceLayout::Horizontal => {
+        widget::layer_container(
             column![
+                sidebar,
                 search_section,
-                column![sidebar, toplevels]
-                    .spacing(12)
-                    .height(Length::Fill)
-                    .width(Length::Fill)
+                toplevels
             ]
             .spacing(12)
-        ),
-    };
-    let panel_regions = app.panel_regions(&surface.output);
-    let container = widget::container(container).padding(panel_regions);
+            .height(Length::Fill)
+            .width(Length::Fill)
+        )
+    }
+};
 
-    // Don't wrap in mouse_area - it blocks dock clicks
-    container.into()
+let panel_regions = app.panel_regions(&surface.output);
+let container = widget::container(container).padding(panel_regions);
+
+container.into()
+
 }
 
 fn close_button(on_press: Msg) -> cosmic::Element<'static, Msg> {
@@ -1045,10 +556,13 @@ fn workspaces_sidebar<'a>(
     }
     let (axis, width, height) = match layout {
         WorkspaceLayout::Vertical => (Axis::Vertical, Length::Shrink, Length::Fill),
-        WorkspaceLayout::Horizontal => (Axis::Horizontal, Length::Fill, Length::Shrink),
+        WorkspaceLayout::Horizontal => (Axis::Horizontal, Length::Shrink, Length::Shrink),
     };
     let sidebar_entries_container =
-        widget::container(crate::widgets::workspace_bar(sidebar_entries, axis)).padding(8.0);
+        widget::container(crate::widgets::workspace_bar(sidebar_entries, axis))
+            .padding(8.0)
+            .width(Length::Shrink)
+            .align_x(cosmic::iced::alignment::Horizontal::Center);
 
     widget::container(
         widget::container(sidebar_entries_container)
@@ -1071,6 +585,8 @@ fn workspaces_sidebar<'a>(
                 }
             })),
     )
+    .width(Length::Fill)
+    .align_x(cosmic::iced::alignment::Horizontal::Center)
     .padding(8)
     .into()
 }
