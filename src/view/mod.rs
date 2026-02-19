@@ -136,7 +136,8 @@ pub(crate) fn layer_surface<'a>(
     };
 
     let search_bar = cosmic::widget::text_input("Search windows...", &app.search_value)
-        .on_input(Msg::SearchChanged)
+        .on_input(Msg::SearchSet)
+        .style(cosmic::theme::TextInput::Search)
         .width(Length::Fill)
         .padding(12)
         .id(crate::SEARCH_INPUT_ID.clone());
