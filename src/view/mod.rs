@@ -135,21 +135,27 @@ pub(crate) fn layer_surface<'a>(
         cosmic::Element::from(toplevels)
     };
 
-    // Select-all visual strategy:
-    // Each monitor gets its own layer surface with its own text_input widget.
-    // Iced's native selection highlight only renders on the widget that has iced
-    // focus (always a single surface, often the wrong monitor). We cannot fix
-    // this from outside iced's text_input internals.
+    // Search bar visual strategy for multi-monitor:
     //
-    // Solution: when select_all_pending is true, REPLACE the text_input with a
-    // styled display widget that mimics "fully selected" text. Because this is
-    // driven purely by app state (not iced widget focus), it renders identically
-    // on ALL monitors.
-    let search_bar: cosmic::Element<'_, Msg> = if app.select_all_pending && !app.search_value.is_empty() {
+    // Problem: each monitor gets its own layer surface. Iced only redraws the
+    // surface that processed a keyboard/pointer event. So any visual change
+    // triggered by an event (like Ctrl+A) only appears on one monitor.
+    //
+    // Solution — two layers:
+    //  1. OUTER: accent-colored border — ALWAYS present, unconditional.
+    //     Because it's part of the initial view_window() for every surface,
+    //     it renders on ALL monitors from the moment the overview opens.
+    //  2. INNER: switches between text_input (normal) and a styled display
+    //     widget (during select-all) that mimics highlighted text.
+
+    let in_select_all = app.select_all_pending && !app.search_value.is_empty();
+
+    // Build the inner content based on select-all state
+    let search_inner: cosmic::Element<'_, Msg> = if in_select_all {
+        // Display widget mimicking fully-selected text
         let selected_text = cosmic::widget::text::body(&app.search_value);
 
-        // Inner container: accent background = the "selection highlight"
-        let highlight = cosmic::widget::container(selected_text)
+        cosmic::widget::container(selected_text)
             .padding([2, 4])
             .class(cosmic::theme::Container::custom(|theme| {
                 let accent: iced::Color = theme.cosmic().accent.base.into();
@@ -159,23 +165,6 @@ pub(crate) fn layer_surface<'a>(
                     text_color: Some(on_accent),
                     border: Border {
                         radius: 3.0.into(),
-                        ..Default::default()
-                    },
-                    ..Default::default()
-                }
-            }));
-
-        // Outer container: matches TextInput::Search appearance
-        cosmic::widget::container(highlight)
-            .padding(12)
-            .width(Length::Fill)
-            .class(cosmic::theme::Container::custom(|theme| {
-                // small_widget already has ~0.25 alpha, matching TextInput::Search bg
-                let bg: iced::Color = theme.current_container().small_widget.into();
-                cosmic::iced::widget::container::Style {
-                    background: Some(iced::Background::Color(bg)),
-                    border: Border {
-                        radius: theme.cosmic().corner_radii.radius_m.into(),
                         ..Default::default()
                     },
                     ..Default::default()
@@ -191,6 +180,32 @@ pub(crate) fn layer_surface<'a>(
             .id(crate::SEARCH_INPUT_ID.clone())
             .into()
     };
+
+    // Wrap in permanent accent-bordered container (visible on ALL monitors).
+    // When in select-all mode, we add padding + background to match the
+    // text_input's normal appearance. When not, the text_input provides its own.
+    let search_bar: cosmic::Element<'_, Msg> = cosmic::widget::container(search_inner)
+        .padding(if in_select_all { 12 } else { 2 })
+        .width(Length::Fill)
+        .class(cosmic::theme::Container::custom(move |theme| {
+            let accent: iced::Color = theme.cosmic().accent.base.into();
+            cosmic::iced::widget::container::Style {
+                background: if in_select_all {
+                    // Match TextInput::Search background since no text_input is present
+                    Some(iced::Background::Color(theme.current_container().small_widget.into()))
+                } else {
+                    // text_input draws its own background; don't double up
+                    None
+                },
+                border: Border {
+                    color: accent,
+                    width: 2.0,
+                    radius: theme.cosmic().corner_radii.radius_m.into(),
+                },
+                ..Default::default()
+            }
+        }))
+        .into();
 
 let launcher_results: cosmic::Element<Msg> = if !app.launcher_items.is_empty() {
     let items: Vec<_> = app
