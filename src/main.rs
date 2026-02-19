@@ -499,12 +499,26 @@ impl Application for App {
                     self.skip_next_changed = false;
                     return Task::none();
                 }
-                self.search_value.push_str(&value);
+                // When select_all_pending, replace the entire text (Ctrl+A → type behavior).
+                // The text_input was swapped out for a display widget during select-all,
+                // so we also need to refocus it now that it's coming back.
+                let needs_refocus = self.select_all_pending;
+                if self.select_all_pending {
+                    self.search_value = value;
+                } else {
+                    self.search_value.push_str(&value);
+                }
                 self.select_all_pending = false;
                 self.request(subscriptions::launcher::Request::Search(
                     self.search_value.clone(),
                 ));
                 self.focused = 0;
+                if needs_refocus {
+                    return Task::perform(
+                        async { tokio::time::sleep(tokio::time::Duration::from_millis(16)).await },
+                        |_| cosmic::Action::App(Msg::FocusSearch),
+                    );
+                }
             }
             Msg::SearchSet(value) => {
                 if !self.visible {
@@ -534,7 +548,8 @@ impl Application for App {
                 }
                 // Global backspace fallback — covers pre-focus window.
                 // If select_all_pending, clear everything instead of popping one char.
-                // Widget handles its own backspace via on_input when it has iced focus.
+                // The text_input was swapped out during select-all, so refocus it.
+                let needs_refocus = self.select_all_pending;
                 if self.select_all_pending {
                     self.search_value.clear();
                     self.select_all_pending = false;
@@ -545,6 +560,12 @@ impl Application for App {
                     self.search_value.clone(),
                 ));
                 self.focused = 0;
+                if needs_refocus {
+                    return Task::perform(
+                        async { tokio::time::sleep(tokio::time::Duration::from_millis(16)).await },
+                        |_| cosmic::Action::App(Msg::FocusSearch),
+                    );
+                }
             }
             Msg::ArrowUp => {
                 if !self.visible || self.launcher_items.is_empty() {
@@ -926,12 +947,7 @@ impl Application for App {
                 }
             }
             Msg::MarkSelectAll => {
-                if self.visible {
-                    // Just set the flag — do NOT fire any tasks.
-                    // The widget has iced focus and will handle Ctrl+A natively (iced's own
-                    // text_input handler calls select_all on its internal State directly).
-                    // Firing our own select_all task on top competed with the widget's native
-                    // handler and caused a one-frame flash then immediate clear.
+                if self.visible && !self.search_value.is_empty() {
                     self.select_all_pending = true;
                 }
             }
