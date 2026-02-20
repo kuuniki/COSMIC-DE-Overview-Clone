@@ -5,7 +5,7 @@ echo "=== Cosmic Workspaces with Launcher Integration - Installation ==="
 echo ""
 
 if [ ! -f "Cargo.toml" ]; then
-    echo "Error: Please run this script from the COSMIC-DE-Overview-Clone directory"
+    echo "Error: Please run this script from the COSMIC-DE-Overview-Launcher directory"
     exit 1
 fi
 
