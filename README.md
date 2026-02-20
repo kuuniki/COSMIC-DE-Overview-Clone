@@ -51,4 +51,5 @@ Backups - I have made it so that the install script creates a backup first, and 
 
 
 **Misc**
-Any feedback or suggested improvements are welcome (but don't complain about the vibe coding because I am already aware). I only ever create stuff for personal use and upload it on the odd chance it helps others; I'm not going to proactively check whether this works on every distro etc. but I am happy to help if you provide some comments/feedback. 
+
+If you come across any bugs, have any feedback or suggested improvements then please do log this as an 'issue' and I'm more than happy to help. Any complaints of vibe coding will be ignored, but rewrite suggestions are also welcome. I care about results over method.
