@@ -1,3 +1,2 @@
-
-# Rust build output
-/target/
+target/
+cosmic-launcher/

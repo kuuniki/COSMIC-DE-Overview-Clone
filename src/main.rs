@@ -330,26 +330,12 @@ impl App {
                 .collect();
             // Fire focus immediately and retry a few times to catch the compositor mapping the surface
             tasks.push(cosmic::widget::text_input::focus(SEARCH_INPUT_ID.clone()));
-            tasks.push(Task::perform(
-                async { tokio::time::sleep(tokio::time::Duration::from_millis(16)).await },
-                |_| cosmic::Action::App(Msg::FocusSearch),
-            ));
-            tasks.push(Task::perform(
-                async { tokio::time::sleep(tokio::time::Duration::from_millis(50)).await },
-                |_| cosmic::Action::App(Msg::FocusSearch),
-            ));
-            tasks.push(Task::perform(
-                async { tokio::time::sleep(tokio::time::Duration::from_millis(150)).await },
-                |_| cosmic::Action::App(Msg::FocusSearch),
-            ));
-            tasks.push(Task::perform(
-                async { tokio::time::sleep(tokio::time::Duration::from_millis(300)).await },
-                |_| cosmic::Action::App(Msg::FocusSearch),
-            ));
-            tasks.push(Task::perform(
-                async { tokio::time::sleep(tokio::time::Duration::from_millis(500)).await },
-                |_| cosmic::Action::App(Msg::FocusSearch),
-            ));
+            for delay in [16, 50, 150, 300, 500u64] {
+                tasks.push(Task::perform(
+                    async move { tokio::time::sleep(tokio::time::Duration::from_millis(delay)).await },
+                    |_| cosmic::Action::App(Msg::FocusSearch),
+                ));
+            }
             let cmd = Task::batch(tasks);
             self.update_capture_filter();
             self.request(subscriptions::launcher::Request::Search(String::new()));
@@ -755,8 +741,9 @@ impl Application for App {
                             let mut task = Task::none();
 
                             // Close workspace view when a toplevel becomes activated
-                            let was_activated = !toplevel.info.state.contains(&cosmic::cctk::cosmic_protocols::toplevel_info::v1::client::zcosmic_toplevel_handle_v1::State::Activated);
-                            let is_activated = info.state.contains(&cosmic::cctk::cosmic_protocols::toplevel_info::v1::client::zcosmic_toplevel_handle_v1::State::Activated);
+                            let activated = cosmic::cctk::cosmic_protocols::toplevel_info::v1::client::zcosmic_toplevel_handle_v1::State::Activated;
+                            let was_activated = !toplevel.info.state.contains(&activated);
+                            let is_activated = info.state.contains(&activated);
 
                             if toplevel.info.app_id != info.app_id {
                                 let app_id = info.app_id.clone();

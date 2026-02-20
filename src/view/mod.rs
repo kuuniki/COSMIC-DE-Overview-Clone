@@ -172,7 +172,7 @@ pub(crate) fn layer_surface<'a>(
             }))
             .into()
     } else {
-        cosmic::widget::text_input("Search windows...", &app.search_value)
+        cosmic::widget::text_input("Type to search...", &app.search_value)
             .on_input(Msg::SearchSet)
             .style(cosmic::theme::TextInput::Search)
             .width(Length::Fill)
@@ -283,7 +283,8 @@ let launcher_results: cosmic::Element<Msg> = if !app.launcher_items.is_empty() {
 let search_section = cosmic::widget::container(
     column![search_bar, launcher_results]
         .spacing(8)
-        .width(Length::Fixed(600.0)),
+        .width(Length::Fill)
+        .max_width(600.0),
 )
 .width(Length::Fill)
 .align_x(cosmic::iced::alignment::Horizontal::Center);
