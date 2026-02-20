@@ -18,7 +18,7 @@ bash install.sh
 ```
 
 
-Step 3 - Press 'Super' key and enjoy
+Step 3 - Press 'Super' key and enjoy. Use tab to navigate from search box to different windows. 
 
 
 
