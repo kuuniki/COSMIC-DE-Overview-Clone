@@ -3,9 +3,9 @@
 
 #![allow(clippy::single_match)]
 use cosmic::widget::Id;
-use once_cell::sync::Lazy;
+use std::sync::LazyLock;
 
-static SEARCH_INPUT_ID: Lazy<Id> = Lazy::new(Id::unique);
+static SEARCH_INPUT_ID: LazyLock<Id> = LazyLock::new(Id::unique);
 
 use cctk::{
     cosmic_protocols::toplevel_management::v1::client::zcosmic_toplevel_manager_v1,
@@ -73,10 +73,9 @@ pub struct Args {}
 #[derive(Default, Debug, Clone)]
 pub struct WorkspaceCommands;
 
-#[allow(clippy::to_string_trait_impl)]
-impl ToString for WorkspaceCommands {
-    fn to_string(&self) -> String {
-        String::new()
+impl std::fmt::Display for WorkspaceCommands {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "")
     }
 }
 
@@ -95,6 +94,7 @@ enum Msg {
     Wayland(backend::Event),
     Close,
     SearchChanged(String),
+    SearchSet(String),
     Backspace,
     LauncherEvent(subscriptions::launcher::Event),
     Activate(Option<usize>),
@@ -127,6 +127,8 @@ enum Msg {
     PanelContainerEntries(Vec<String>),
     PanelConfig(CosmicPanelConfig),
     Ignore,
+    FocusSearch,
+    MarkSelectAll,
 }
 
 #[derive(Clone, Debug)]
@@ -203,6 +205,8 @@ struct App {
     launcher_item_icon_handles: Vec<Option<cosmic::widget::icon::Handle>>,
     tx: Option<mpsc::Sender<subscriptions::launcher::Request>>,
     focused: usize,
+    select_all_pending: bool,
+    skip_next_changed: bool,
     ignore_next_activation_update: bool,
     drop_target: Option<DropTarget>,
     dbus_interface: Option<dbus::Interface>,
@@ -228,6 +232,8 @@ impl Default for App {
             launcher_item_icon_handles: Default::default(),
             tx: Default::default(),
             focused: 0,
+            select_all_pending: false,
+            skip_next_changed: false,
             ignore_next_activation_update: false,
             drop_target: Default::default(),
             dbus_interface: Default::default(),
@@ -322,7 +328,28 @@ impl App {
                 .into_iter()
                 .map(|output| self.create_surface(output.handle))
                 .collect();
+            // Fire focus immediately and retry a few times to catch the compositor mapping the surface
             tasks.push(cosmic::widget::text_input::focus(SEARCH_INPUT_ID.clone()));
+            tasks.push(Task::perform(
+                async { tokio::time::sleep(tokio::time::Duration::from_millis(16)).await },
+                |_| cosmic::Action::App(Msg::FocusSearch),
+            ));
+            tasks.push(Task::perform(
+                async { tokio::time::sleep(tokio::time::Duration::from_millis(50)).await },
+                |_| cosmic::Action::App(Msg::FocusSearch),
+            ));
+            tasks.push(Task::perform(
+                async { tokio::time::sleep(tokio::time::Duration::from_millis(150)).await },
+                |_| cosmic::Action::App(Msg::FocusSearch),
+            ));
+            tasks.push(Task::perform(
+                async { tokio::time::sleep(tokio::time::Duration::from_millis(300)).await },
+                |_| cosmic::Action::App(Msg::FocusSearch),
+            ));
+            tasks.push(Task::perform(
+                async { tokio::time::sleep(tokio::time::Duration::from_millis(500)).await },
+                |_| cosmic::Action::App(Msg::FocusSearch),
+            ));
             let cmd = Task::batch(tasks);
             self.update_capture_filter();
             self.request(subscriptions::launcher::Request::Search(String::new()));
@@ -348,6 +375,8 @@ impl App {
         self.search_value.clear();
         self.launcher_items.clear();
         self.focused = 0;
+        self.select_all_pending = false;
+        self.skip_next_changed = false;
         self.update_capture_filter();
         self.drag_surface = None;
         Task::batch(
@@ -401,7 +430,7 @@ impl App {
         let mut regions = iced::Padding::ZERO;
         for config in self.panel_configs.values().flatten() {
             if config.autohide.is_some() && !config.exclusive_zone {
-                let dimention_constraints = config.get_dimensions(
+                let dimension_constraints = config.get_dimensions(
                     Some((output.width as u32, output.height as u32)),
                     None,
                     Some(config.get_effective_anchor_gap()),
@@ -410,25 +439,25 @@ impl App {
                     config.size.get_applet_icon_size_with_padding(true) + u32::from(config.margin);
                 match config.anchor {
                     PanelAnchor::Left => {
-                        let size = dimention_constraints.0.map_or(size, |constraints| {
+                        let size = dimension_constraints.0.map_or(size, |constraints| {
                             size.clamp(constraints.start, constraints.end)
                         });
                         regions.left += size as f32;
                     }
                     PanelAnchor::Right => {
-                        let size = dimention_constraints.0.map_or(size, |constraints| {
+                        let size = dimension_constraints.0.map_or(size, |constraints| {
                             size.clamp(constraints.start, constraints.end)
                         });
                         regions.right += size as f32;
                     }
                     PanelAnchor::Top => {
-                        let size = dimention_constraints.1.map_or(size, |constraints| {
+                        let size = dimension_constraints.1.map_or(size, |constraints| {
                             size.clamp(constraints.start, constraints.end)
                         });
                         regions.top += size as f32;
                     }
                     PanelAnchor::Bottom => {
-                        let size = dimention_constraints.1.map_or(size, |constraints| {
+                        let size = dimension_constraints.1.map_or(size, |constraints| {
                             size.clamp(constraints.start, constraints.end)
                         });
                         regions.bottom += size as f32;
@@ -462,21 +491,80 @@ impl Application for App {
                 if !self.visible {
                     return Task::none();
                 }
-                self.search_value.push_str(&value);
+                // Global keyboard fallback (fires for every keypress via subscription).
+                // If skip_next_changed is set, SearchSet already handled this exact keystroke
+                // (widget had focus) — consume the flag and skip to avoid double-append.
+                if self.skip_next_changed {
+                    self.skip_next_changed = false;
+                    return Task::none();
+                }
+                // When select_all_pending, replace the entire text (Ctrl+A → type behavior).
+                // The text_input was swapped out for a display widget during select-all,
+                // so we also need to refocus it now that it's coming back.
+                let needs_refocus = self.select_all_pending;
+                if self.select_all_pending {
+                    self.search_value = value;
+                } else {
+                    self.search_value.push_str(&value);
+                }
+                self.select_all_pending = false;
                 self.request(subscriptions::launcher::Request::Search(
                     self.search_value.clone(),
                 ));
                 self.focused = 0;
+                if needs_refocus {
+                    return Task::perform(
+                        async { tokio::time::sleep(tokio::time::Duration::from_millis(16)).await },
+                        |_| cosmic::Action::App(Msg::FocusSearch),
+                    );
+                }
+            }
+            Msg::SearchSet(value) => {
+                if !self.visible {
+                    return Task::none();
+                }
+                // Widget on_input — always authoritative. Handles typing, paste,
+                // backspace-on-selection, and overwrite-after-select-all correctly.
+                // If the value actually changed, the widget processed this key — set the flag
+                // so the global SearchChanged for the same keystroke gets skipped once.
+                if value != self.search_value {
+                    self.skip_next_changed = true;
+                    self.search_value = value;
+                    self.select_all_pending = false;
+                    self.request(subscriptions::launcher::Request::Search(
+                        self.search_value.clone(),
+                    ));
+                    self.focused = 0;
+                } else {
+                    // Value unchanged (SearchChanged beat us to it) — just sync, no double search.
+                    self.search_value = value;
+                    self.select_all_pending = false;
+                }
             }
             Msg::Backspace => {
                 if !self.visible {
                     return Task::none();
                 }
-                self.search_value.pop();
+                // Global backspace fallback — covers pre-focus window.
+                // If select_all_pending, clear everything instead of popping one char.
+                // The text_input was swapped out during select-all, so refocus it.
+                let needs_refocus = self.select_all_pending;
+                if self.select_all_pending {
+                    self.search_value.clear();
+                    self.select_all_pending = false;
+                } else {
+                    self.search_value.pop();
+                }
                 self.request(subscriptions::launcher::Request::Search(
                     self.search_value.clone(),
                 ));
                 self.focused = 0;
+                if needs_refocus {
+                    return Task::perform(
+                        async { tokio::time::sleep(tokio::time::Duration::from_millis(16)).await },
+                        |_| cosmic::Action::App(Msg::FocusSearch),
+                    );
+                }
             }
             Msg::ArrowUp => {
                 if !self.visible || self.launcher_items.is_empty() {
@@ -531,10 +619,12 @@ impl Application for App {
                             action_name: _,
                         } => {
                             // Launch the desktop file
-                            if let Err(_e) = std::process::Command::new("gtk-launch")
+                            if let Err(e) = std::process::Command::new("gtk-launch")
                                 .arg(path.file_stem().and_then(|s| s.to_str()).unwrap_or(""))
                                 .spawn()
-                            {}
+                            {
+                                log::error!("Failed to launch desktop entry: {e}");
+                            }
                             return self.hide();
                         }
                         pop_launcher::Response::Close => {
@@ -610,7 +700,7 @@ impl Application for App {
                 }
                 WaylandEvent::Layer(LayerEvent::Done, _surface, id) => {
                     if self.layer_surfaces.remove(&id).is_none() {
-                        log::error!("removing non-existant layer shell id {}?", id);
+                        log::error!("removing non-existent layer shell id {}?", id);
                     }
                 }
                 _ => {}
@@ -852,6 +942,16 @@ impl Application for App {
                 self.panel_configs.insert(config.name.clone(), Some(config));
             }
             Msg::Ignore => {}
+            Msg::FocusSearch => {
+                if self.visible {
+                    return cosmic::widget::text_input::focus(SEARCH_INPUT_ID.clone());
+                }
+            }
+            Msg::MarkSelectAll => {
+                if self.visible && !self.search_value.is_empty() {
+                    self.select_all_pending = true;
+                }
+            }
         }
 
         Task::none()
@@ -886,15 +986,21 @@ impl Application for App {
                 key: Key::Character(ref c),
                 modifiers,
                 ..
+            }) if modifiers.control() && c.as_str() == "a" => Some(Msg::MarkSelectAll),
+            iced::Event::Keyboard(iced::keyboard::Event::KeyPressed {
+                key: Key::Character(ref c),
+                modifiers,
+                ..
             }) if modifiers.is_empty() => Some(Msg::SearchChanged(c.to_string())),
+            iced::Event::Keyboard(iced::keyboard::Event::KeyPressed {
+                key: Key::Named(Named::Space),
+                modifiers,
+                ..
+            }) if modifiers.is_empty() => Some(Msg::SearchChanged(" ".to_string())),
             iced::Event::Keyboard(iced::keyboard::Event::KeyPressed {
                 key: Key::Named(Named::Backspace),
                 ..
             }) => Some(Msg::Backspace),
-            iced::Event::Keyboard(iced::keyboard::Event::KeyPressed {
-                key: Key::Named(Named::Space),
-                ..
-            }) => Some(Msg::SearchChanged(" ".to_string())),
             iced::Event::Keyboard(iced::keyboard::Event::KeyPressed {
                 key: Key::Named(Named::ArrowUp),
                 ..
@@ -979,7 +1085,7 @@ impl Application for App {
         if let Some(surface) = self.layer_surfaces.get(&id) {
             return view::layer_surface(self, surface);
         }
-        log::error!("non-existant layer shell id {}?", id);
+        log::error!("non-existent layer shell id {}?", id);
         cosmic::widget::text("workspaces").into()
     }
 

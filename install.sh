@@ -58,9 +58,19 @@ mkdir -p "$SHORTCUTS_DIR"
 
 if [ -f "$SHORTCUTS_CONFIG" ]; then
     cp "$SHORTCUTS_CONFIG" "${SHORTCUTS_CONFIG}.backup.$(date +%s)"
-fi
-
-cat > "$SHORTCUTS_CONFIG" << 'SHORTCUTS'
+    if grep -q "WorkspaceOverview" "$SHORTCUTS_CONFIG"; then
+        echo "Super key already mapped to WorkspaceOverview, skipping."
+    else
+        # Merge: insert our binding before the closing brace
+        sed -i '/^}/ i    (
+        modifiers: [
+            Super,
+        ],
+    ): System(WorkspaceOverview),' "$SHORTCUTS_CONFIG"
+        echo "Super key binding added to existing shortcuts."
+    fi
+else
+    cat > "$SHORTCUTS_CONFIG" << 'SHORTCUTS'
 {
     (
         modifiers: [
@@ -69,6 +79,7 @@ cat > "$SHORTCUTS_CONFIG" << 'SHORTCUTS'
     ): System(WorkspaceOverview),
 }
 SHORTCUTS
+fi
 
 echo "Super key configured!"
 
@@ -94,6 +105,8 @@ echo "Workspace layout set to Horizontal."
 
 # Install atomically
 echo "Installing..."
+sudo mkdir -p /usr/local/lib/cosmic-workspaces-overview
+sudo cp "$BIN_PATH" /usr/local/lib/cosmic-workspaces-overview/cosmic-workspaces
 sudo cp "$BIN_PATH" /usr/bin/cosmic-workspaces.new
 sudo chmod +x /usr/bin/cosmic-workspaces.new
 sudo mv /usr/bin/cosmic-workspaces.new /usr/bin/cosmic-workspaces
@@ -119,7 +132,7 @@ Target = cosmic-workspaces
 [Action]
 Description = Reinstalling custom cosmic-workspaces with launcher integration...
 When = PostTransaction
-Exec = /bin/sh -c 'cp "${BIN_PATH}" /usr/bin/cosmic-workspaces.new && chmod +x /usr/bin/cosmic-workspaces.new && mv /usr/bin/cosmic-workspaces.new /usr/bin/cosmic-workspaces && killall cosmic-workspaces 2>/dev/null || true'
+Exec = /bin/sh -c 'cp /usr/local/lib/cosmic-workspaces-overview/cosmic-workspaces /usr/bin/cosmic-workspaces.new && chmod +x /usr/bin/cosmic-workspaces.new && mv /usr/bin/cosmic-workspaces.new /usr/bin/cosmic-workspaces && killall cosmic-workspaces 2>/dev/null || true'
 HOOK
     echo "Pacman hook installed!"
     AUTO_REINSTALL="pacman"

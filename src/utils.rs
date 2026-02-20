@@ -41,8 +41,7 @@ pub fn create_memfile() -> rustix::io::Result<OwnedFd> {
                     return Err(errno);
                 }
             },
-            #[allow(unreachable_patterns)]
-            Err(Errno::EXIST | Errno::EXIST) => {
+            Err(Errno::EXIST) => {
                 continue;
             }
             Err(errno) => return Err(errno),

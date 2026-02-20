@@ -1304,7 +1304,6 @@ dependencies = [
  "libcosmic",
  "log",
  "memmap2 0.9.9",
- "once_cell",
  "pop-launcher",
  "pop-launcher-service",
  "rust-embed",

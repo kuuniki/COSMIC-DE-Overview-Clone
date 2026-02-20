@@ -66,7 +66,7 @@ impl Interface {
 
     pub fn subscription(&self) -> iced::Subscription<Event> {
         iced::Subscription::run_with_id(
-            "workspaces-dbus-sun",
+            "workspaces-dbus-sub",
             BroadcastStream::new(self.event_sender.subscribe()).filter_map(|x| async { x.ok() }),
         )
     }

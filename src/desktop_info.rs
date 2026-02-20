@@ -1,4 +1,4 @@
-// Coppied from cosmic-app-list
+// Copied from cosmic-app-list
 // - Put in a library? libcosmic?
 
 use cosmic::desktop::fde;

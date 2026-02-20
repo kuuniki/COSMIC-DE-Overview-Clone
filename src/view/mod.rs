@@ -135,11 +135,77 @@ pub(crate) fn layer_surface<'a>(
         cosmic::Element::from(toplevels)
     };
 
-    let search_bar = cosmic::widget::text_input("Search windows...", &app.search_value)
-        .on_input(Msg::SearchChanged)
+    // Search bar visual strategy for multi-monitor:
+    //
+    // Problem: each monitor gets its own layer surface. Iced only redraws the
+    // surface that processed a keyboard/pointer event. So any visual change
+    // triggered by an event (like Ctrl+A) only appears on one monitor.
+    //
+    // Solution — two layers:
+    //  1. OUTER: accent-colored border — ALWAYS present, unconditional.
+    //     Because it's part of the initial view_window() for every surface,
+    //     it renders on ALL monitors from the moment the overview opens.
+    //  2. INNER: switches between text_input (normal) and a styled display
+    //     widget (during select-all) that mimics highlighted text.
+
+    let in_select_all = app.select_all_pending && !app.search_value.is_empty();
+
+    // Build the inner content based on select-all state
+    let search_inner: cosmic::Element<'_, Msg> = if in_select_all {
+        // Display widget mimicking fully-selected text
+        let selected_text = cosmic::widget::text::body(&app.search_value);
+
+        cosmic::widget::container(selected_text)
+            .padding([2, 4])
+            .class(cosmic::theme::Container::custom(|theme| {
+                let accent: iced::Color = theme.cosmic().accent.base.into();
+                let on_accent: iced::Color = theme.cosmic().accent.on.into();
+                cosmic::iced::widget::container::Style {
+                    background: Some(iced::Background::Color(accent)),
+                    text_color: Some(on_accent),
+                    border: Border {
+                        radius: 3.0.into(),
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                }
+            }))
+            .into()
+    } else {
+        cosmic::widget::text_input("Search windows...", &app.search_value)
+            .on_input(Msg::SearchSet)
+            .style(cosmic::theme::TextInput::Search)
+            .width(Length::Fill)
+            .padding(12)
+            .id(crate::SEARCH_INPUT_ID.clone())
+            .into()
+    };
+
+    // Wrap in permanent accent-bordered container (visible on ALL monitors).
+    // When in select-all mode, we add padding + background to match the
+    // text_input's normal appearance. When not, the text_input provides its own.
+    let search_bar: cosmic::Element<'_, Msg> = cosmic::widget::container(search_inner)
+        .padding(if in_select_all { 12 } else { 2 })
         .width(Length::Fill)
-        .padding(12)
-        .id(crate::SEARCH_INPUT_ID.clone());
+        .class(cosmic::theme::Container::custom(move |theme| {
+            let accent: iced::Color = theme.cosmic().accent.base.into();
+            cosmic::iced::widget::container::Style {
+                background: if in_select_all {
+                    // Match TextInput::Search background since no text_input is present
+                    Some(iced::Background::Color(theme.current_container().small_widget.into()))
+                } else {
+                    // text_input draws its own background; don't double up
+                    None
+                },
+                border: Border {
+                    color: accent,
+                    width: 2.0,
+                    radius: theme.cosmic().corner_radii.radius_m.into(),
+                },
+                ..Default::default()
+            }
+        }))
+        .into();
 
 let launcher_results: cosmic::Element<Msg> = if !app.launcher_items.is_empty() {
     let items: Vec<_> = app
@@ -191,11 +257,11 @@ let launcher_results: cosmic::Element<Msg> = if !app.launcher_items.is_empty() {
     cosmic::widget::container(
         cosmic::widget::column::with_children(items).spacing(1),
     )
-    .class(cosmic::theme::Container::custom(|_theme| {
+    .class(cosmic::theme::Container::custom(|theme| {
         cosmic::iced::widget::container::Style {
             background: Some(
                 cosmic::iced::Background::Color(
-                    cosmic::iced::Color::from_rgb8(12, 13, 31),
+                    theme.current_container().base.into(),
                 )
             ),
             border: Border {
