@@ -1,6 +1,7 @@
 # COSMIC DE 'Overview' Launcher Super Key
 Bringing the magic of GNOME to COSMIC with a combined Workspaces + Launcher UI. Preview:
-<img width="2560" height="1440" alt="image" src="https://github.com/user-attachments/assets/59879f96-16d6-462f-8901-7b2a20b39a0f" />
+<img width="2560" height="1440" alt="image" src="https://github.com/user-attachments/assets/23557900-3536-4205-9095-4d13627e618b" />
+
 
 
 **How to install and use**
